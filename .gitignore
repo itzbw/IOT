@@ -10,3 +10,8 @@
 **/.kube/
 
 **/generated/
+
+
+CLAUDE.md
+subject.md
+correction.md
