@@ -4,7 +4,7 @@ metadata:
   name: ingress-apps
 spec:
   rules:
-    - host: app-one
+    - host: app1.com
       http:
         paths:
           - pathType: Prefix
@@ -14,7 +14,7 @@ spec:
                 name: app-one
                 port:
                   number: 80
-    - host: app-two
+    - host: app2.com
       http:
         paths:
           - pathType: Prefix

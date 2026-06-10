@@ -25,11 +25,11 @@ echo "📦 Looking for Kubernetes YAMLs in $MANIFEST_DIR"
 
 if ls $MANIFEST_DIR/*.yml >/dev/null 2>&1; then
   echo "🚀 Applying Kubernetes manifests..."
-  kubectl apply -f $MANIFEST_DIR/config-map.yml || true
-  kubectl apply -f $MANIFEST_DIR/app-one.yml || true
-  kubectl apply -f $MANIFEST_DIR/app-two.yml || true
-  kubectl apply -f $MANIFEST_DIR/app-three.yml || true
-  kubectl apply -f $MANIFEST_DIR/ingress.yml || true
+  kubectl apply -f $MANIFEST_DIR/config-map.yml
+  kubectl apply -f $MANIFEST_DIR/app-one.yml
+  kubectl apply -f $MANIFEST_DIR/app-two.yml
+  kubectl apply -f $MANIFEST_DIR/app-three.yml
+  kubectl apply -f $MANIFEST_DIR/ingress.yml
 else
   echo "⚠️ No YAML files found in $MANIFEST_DIR. Skipping kubectl apply."
 fi

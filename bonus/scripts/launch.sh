@@ -2,6 +2,8 @@
 
 set -e
 
+cd "$(dirname "$0")"
+
 echo "🚀 Launching bonus setup..."
 
 # Run the install script if needed
@@ -16,9 +18,10 @@ fi
 
 # Create k3d cluster
 echo "Creating k3d cluster..."
+# 80 -> ingress-nginx (GitLab UI), 8888 -> NodePort 30888 of the wil-playground service
 k3d cluster create iot-cluster \
     -p "80:80@loadbalancer" \
-    -p "8888:8080@loadbalancer" \
+    -p "8888:30888@server:0" \
     --k3s-arg "--disable=traefik@server:0" || echo "Cluster might already exist"
 
 # Create namespaces
@@ -63,7 +66,7 @@ helm repo update
 echo "Installing GitLab with Helm (this will take a while)..."
 helm upgrade --install gitlab gitlab/gitlab \
   --namespace gitlab \
-  -f /vagrant/confs/gitlab-values.yaml \
+  -f ../confs/gitlab-values.yaml \
   --timeout 1200s
 
 echo "Waiting for GitLab pods to be ready (this can take 5-15 minutes)..."

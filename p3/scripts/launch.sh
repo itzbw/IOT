@@ -2,6 +2,8 @@
 
 set -e
 
+cd "$(dirname "$0")"
+
 echo "🚀 Launching Part 3 setup..."
 
 # Run the install script if needed
@@ -15,9 +17,9 @@ fi
 
 # Create k3d cluster
 echo "Creating k3d cluster..."
+# 8888 on the VM -> NodePort 30888 of the wil-playground service (dev/service.yaml)
 k3d cluster create iot-cluster \
-    -p "80:80@loadbalancer" \
-    -p "8888:8080@loadbalancer" \
+    -p "8888:30888@server:0" \
     --k3s-arg "--disable=traefik@server:0" || echo "Cluster might already exist"
 
 # Create namespaces
@@ -48,3 +50,4 @@ echo "Password: $ARGOCD_PASSWORD"
 echo ""
 echo "Your app should be deployed to 'dev' namespace"
 echo "Check with: kubectl get pods -n dev"
+echo "Test the app with: curl http://localhost:8888/"

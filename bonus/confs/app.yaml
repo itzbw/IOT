@@ -6,7 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: http://gitlab.local/root/iot.git
+    # gitlab.local only resolves on the host (/etc/hosts) — pods must use the
+    # in-cluster webservice address (workhorse HTTP port 8181) to reach GitLab
+    repoURL: http://gitlab-webservice-default.gitlab.svc:8181/root/iot.git
     targetRevision: HEAD
     path: dev
   destination:

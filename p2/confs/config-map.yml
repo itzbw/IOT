@@ -52,8 +52,4 @@ data:
     </html>
 kind: ConfigMap
 metadata:
-  creationTimestamp: "2025-07-04T22:01:06Z"
   name: nginx-html
-  namespace: default
-  resourceVersion: "861"
-  uid: 71c2a418-6090-4d39-be2d-81dfa7f6c15e

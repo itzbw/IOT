@@ -9,8 +9,8 @@ vagrant ssh bonus
 ## Inside the VM
 
 cd /vagrant/scripts
-chmod -x launch.sh install.sh
-bash `install.sh`
+chmod +x launch.sh install.sh
+bash install.sh
 exit
 
 
@@ -18,7 +18,7 @@ exit
 
 vagrant ssh bonus
 cd /vagrant/scripts
-bash `launch.sh` # This may take ~15min
+bash launch.sh # This may take ~15min
 
 
 ## On your host machine
@@ -50,7 +50,7 @@ http://192.168.56.130:8080
 
 Once everything is synced and healthy, the app will be available at:
 
-http://192.168.56.130
+http://192.168.56.130:8888
 
 
 ## Update image
