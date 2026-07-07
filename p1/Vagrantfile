@@ -4,12 +4,12 @@ Vagrant.configure("2") do |config|
     config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
 
     # Configuration de la VM Master
-    config.vm.define "bwongS" do |master|
+    config.vm.define "p1-server" do |master|
         master.vm.box = "ubuntu/jammy64" # Ubuntu 22.04 LTS
-        master.vm.hostname = "bwongS"
+        master.vm.hostname = "p1-server"
         master.vm.network "private_network", ip: "192.168.56.110"
         master.vm.provider "virtualbox" do |vb|
-            vb.name = "bwongS"
+            vb.name = "p1-server"
             vb.memory = "1024"
             vb.cpus = 1
         end
@@ -18,12 +18,12 @@ Vagrant.configure("2") do |config|
     end
 
     #   Configuration de la VM Worker
-    config.vm.define "bwongSW" do |worker|
+    config.vm.define "p1-worker" do |worker|
         worker.vm.box = "ubuntu/jammy64" # Ubuntu 22.04 LTS
-        worker.vm.hostname = "bwongSW"
+        worker.vm.hostname = "p1-worker"
         worker.vm.network "private_network", ip: "192.168.56.111"
         worker.vm.provider "virtualbox" do |vb|
-            vb.name = "bwongSW"
+            vb.name = "p1-worker"
             vb.memory = "1024"
             vb.cpus = 1
         end

@@ -3,12 +3,12 @@ Vagrant.configure("2") do |config|
     config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
 
     # Configuration de la VM Master
-    config.vm.define "p2-host" do |master|
+    config.vm.define "bwongS-p2" do |master|
         master.vm.box = "ubuntu/jammy64" # Ubuntu 22.04 LTS
-        master.vm.hostname = "p2-host"
+        master.vm.hostname = "bwongS-p2"
         master.vm.network "private_network", ip: "192.168.56.110"
         master.vm.provider "virtualbox" do |vb|
-            vb.name = "p2-host"
+            vb.name = "bwongS-p2"
             vb.memory = "2048"
             vb.cpus = 4
         end
