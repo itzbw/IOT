@@ -1,17 +1,22 @@
+# VirtualBox / Vagrant
 **/.vagrant/
 
+# Kubernetes runtime artifacts
 **/confs/token
+**/.kube/
 
+# Editor / IDE
+.idea/
+.vscode/
+
+# Generated files
+**/generated/
+
+# Temp / swap / logs
 *.log
 *.tmp
 *.swp
 *~
 
-**/.kube/
-
-**/generated/
-
-
-CLAUDE.md
-subject.md
-correction.md
+# macOS
+.DS_Store
