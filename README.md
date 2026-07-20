@@ -121,14 +121,3 @@ On the host, add to `/etc/hosts`: `192.168.56.130 gitlab.local`
 
 - `dev/deployment.yaml` on `v1` everywhere (this repo, GitHub, GitLab).
 - All VMs destroyed, everything committed and pushed.
-
-////clean up////
-VBoxManage unregistervm "p1-server" --delete
-VBoxManage unregistervm "p2-host" --delete
-VBoxManage unregistervm "ubuntu-jammy-22.04-cloudimg-20260706_1783607073817_23341" --delete
-VBoxManage unregistervm "ubuntu-jammy-22.04-cloudimg-20260706_1783607970163_67265" --delete
-VBoxManage unregistervm "ubuntu-jammy-22.04-cloudimg-20260706_1783608087445_66572" --delete
-for id in $(VBoxManage list vms | grep inaccessible | awk -F'[{}]' '{print $2}'); do
-    VBoxManage unregistervm "$id" --delete
-done
-VBoxManage list vms

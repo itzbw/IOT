@@ -1,0 +1,54 @@
+
+////clean up////
+VBoxManage unregistervm "p1-server" --delete
+VBoxManage unregistervm "p2-host" --delete
+VBoxManage unregistervm "ubuntu-jammy-22.04-cloudimg-20260706_1783607073817_23341" --delete
+VBoxManage unregistervm "ubuntu-jammy-22.04-cloudimg-20260706_1783607970163_67265" --delete
+VBoxManage unregistervm "ubuntu-jammy-22.04-cloudimg-20260706_1783608087445_66572" --delete
+for id in $(VBoxManage list vms | grep inaccessible | awk -F'[{}]' '{print $2}'); do
+    VBoxManage unregistervm "$id" --delete
+done
+VBoxManage list vms
+
+ killall -9 VBoxSVC VirtualBox VBoxHeadless 2>/dev/null
+
+ ////////////////p2////////////
+ cd ~/Desktop/IOT/p2
+vagrant ssh
+Check:
+kubectl get pods
+Check services:
+kubectl get svc
+kubectl get nodes
+kubectl get ingress
+Test app1
+curl -H "Host: app1.com" http://192.168.56.110
+Test app2
+curl -H "Host: app2.com" http://192.168.56.110
+app3
+Use another hostname:
+curl -H "Host: test.com" http://192.168.56.110
+tap in browser http://app1.com
+
+////////////////////p3////////////////////
+vagrant ssh 
+ cd /vagrant
+ cd scripts
+chmod +x install.sh launch.sh
+./launch.sh
+Run:
+k3d kubeconfig merge iot-cluster --kubeconfig-switch-context
+kubectl get nodes
+3) Then check Argo CD
+kubectl get pods -n argocd
+4) Then check your application
+kubectl get pods -n dev
+k3d cluster list
+curl http://localhost:8888/ and check http://192.168.56.120:8888
+kubectl get deployment -n dev -o yaml | grep image and change v1 to v2
+to see the website: kubectl port-forward --address 0.0.0.0 svc/argocd-server 8080:443 -n argocd
+https://192.168.56.120:8080 write admin for username and 
+Get Argo CD password
+In another SSH terminal:
+kubectl get secret argocd-initial-admin-secret -n argocd \
+-o jsonpath="{.data.password}" | base64 -d
