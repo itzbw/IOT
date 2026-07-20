@@ -1,11 +1,11 @@
 Vagrant.configure("2") do |config|
 
-    config.vm.define "p3-host" do |host|
+    config.vm.define "imqandylS" do |host|
         host.vm.box = "ubuntu/jammy64" # Ubuntu 22.04 LTS
-        host.vm.hostname = "p3-host"
+        host.vm.hostname = "imqandylS"
         host.vm.network "private_network", ip: "192.168.56.120"
         host.vm.provider "virtualbox" do |vb|
-            vb.name = "p3-host"
+            vb.name = "imqandylS"
             vb.memory = "4096"
             vb.cpus = 4
         end
