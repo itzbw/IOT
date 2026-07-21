@@ -10,7 +10,9 @@ for id in $(VBoxManage list vms | grep inaccessible | awk -F'[{}]' '{print $2}')
 done
 VBoxManage list vms
 
- killall -9 VBoxSVC VirtualBox VBoxHeadless 2>/dev/null
+killall -9 VBoxSVC VirtualBox VBoxHeadless 2>/dev/null
+ls /goinfre/imqandyl/VirtualBoxVMs
+rm -rf /goinfre/imqandyl/VirtualBoxVMs/imqandylS
 
  ////////////////p2////////////
  cd ~/Desktop/IOT/p2
