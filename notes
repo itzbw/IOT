@@ -53,6 +53,8 @@ In another SSH terminal:
 kubectl get secret argocd-initial-admin-secret -n argocd \-o jsonpath="{.data.password}" | base64 -d
 
 
+if docker doesn't have permissions run : sudo usermod -aG docker $USER
+
 
 tocheck version 
 Then refresh Argo CD:
