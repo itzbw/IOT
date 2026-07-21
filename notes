@@ -50,5 +50,18 @@ to see the website: kubectl port-forward --address 0.0.0.0 svc/argocd-server 808
 https://192.168.56.120:8080 write admin for username and 
 Get Argo CD password
 In another SSH terminal:
-kubectl get secret argocd-initial-admin-secret -n argocd \
--o jsonpath="{.data.password}" | base64 -d
+kubectl get secret argocd-initial-admin-secret -n argocd \-o jsonpath="{.data.password}" | base64 -d
+
+
+
+tocheck version 
+Then refresh Argo CD:
+kubectl annotate application playground-app -n argocd argocd.argoproj.io/refresh=hard --overwrite
+
+Check:
+
+kubectl get application playground-app -n argocd
+
+Then verify the version:
+
+kubectl get deployment -n dev -o yaml | grep image
