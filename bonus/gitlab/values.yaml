@@ -1,0 +1,39 @@
+global:
+  hosts:
+    domain: localhost
+    https: false
+    gitlab:
+      name: localhost
+  ingress:
+    enabled: false
+    tls:
+      enabled: false
+
+nginx-ingress:
+  enabled: false
+
+certmanager-issuer:
+  email: fake@example.com
+
+prometheus:
+  install: false
+grafana:
+  enabled: false
+gitlab-runner:
+  install: false
+
+postgresql:
+  install: true
+redis:
+  install: true
+minio:
+  install: true
+
+gitlab:
+  name: localhost
+  webservice:
+    minReplicas: 1
+    maxReplicas: 1
+  sidekiq:
+    minReplicas: 1
+    maxReplicas: 1
