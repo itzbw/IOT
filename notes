@@ -73,22 +73,35 @@ kubectl get deployment -n dev -o yaml | grep image
 
 
 bonus
-run vagrant ssh -- -L 8181:localhost:8181
-this to run main cmd : kubectl port-forward -n gitlab svc/gitlab-webservice-default 8181:8181
+tell Argo CD to read from GitLab instead of GitHub.
+confirm your cluster is still fine after that OS upgrade scare
+bash
+kubectl get nodes
+kubectl get pods -n gitlab
+kubectl get pods -n argocd
 
-in another ssh 
-to get the password :kubectl get secret gitlab-gitlab-initial-root-password -n gitlab \
-    -o jsonpath='{.data.password}' | base64 -d; echo
-for login is root
+chmod +x bonus/gitlab/install-gitlab.sh
+kubectl get pods -n gitlab -w
+Wait for gitlab-webservice-default-* to roll to a new pod and become Running 2/2: and run kubectl get pods -n gitlab
 
 helm upgrade gitlab gitlab/gitlab \
   -n gitlab \
   --version 9.10.5 \
   -f bonus/gitlab/values.yaml \
   --timeout 600s
+in another ssh 
 
-Wait for gitlab-webservice-default-* to roll to a new pod and become Running 2/2:
-kubectl get pods -n gitlab -w
+to get the password :kubectl get secret gitlab-gitlab-initial-root-password -n gitlab \
+  -o jsonpath='{.data.password}' | base64 -d; echo
+for login is root
+
+
+run vagrant ssh -- -L 8181:localhost:8181
+this to run main cmd : kubectl port-forward -n gitlab svc/gitlab-webservice-default 8181:8181
+
+
+
+
 
 
 Restart the port-forward
@@ -97,10 +110,7 @@ kubectl port-forward -n gitlab svc/gitlab-webservice-default 8181:8181
 
 
 
-tell Argo CD to read from GitLab instead of GitHub.
-get the password: kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath='{.data.password}' | base64 -d; echo
-copy it argocd login localhost:8080 --username admin --password <PASSWORD> --insecure
-in another ssh run kubectl port-forward -n argocd svc/argocd-server 8080:443
+
 
 
 verify connect argocd app list

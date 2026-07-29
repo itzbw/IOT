@@ -1,0 +1,96 @@
+# Bonus — GitLab Integration
+
+This bonus adds a local GitLab instance to the cluster built in Part 3,
+and reconfigures Argo CD to sync from it instead of GitHub.
+
+## What's included
+
+- `confs/gitlab-values.yaml` — Helm values used to install GitLab
+- `confs/gitlab-app.yaml` — Argo CD Application pointing at the local GitLab repo
+- `scripts/install_gitlab.sh` — installs GitLab into the `gitlab` namespace
+
+## Architecture
+
+GitLab runs inside the same k3s cluster as Argo CD, in its own `gitlab`
+namespace, installed via the official GitLab Helm chart. Argo CD reaches
+it through the in-cluster service DNS name — no external ingress or DNS
+needed.
+
+- GitLab chart version: `9.10.5` (app version v18.10.5) — the latest
+  chart version that still bundles PostgreSQL, Redis, and MinIO. Newer
+  chart versions require external database services, which adds
+  unnecessary complexity for a local single-node lab cluster.
+
+## 1. Install GitLab
+
+```bash
+kubectl create namespace gitlab
+./bonus/scripts/install_gitlab.sh
+```
+
+This installs GitLab via Helm and waits for pods to come up
+(takes 10–15 minutes on first install).
+
+## 2. Access the GitLab UI (for setup only)
+
+```bash
+kubectl port-forward -n gitlab svc/gitlab-webservice-default 8181:8181
+```
+
+Then browse to `http://localhost:8181`.
+
+Get the root password:
+
+```bash
+kubectl get secret gitlab-gitlab-initial-root-password -n gitlab \
+  -o jsonpath='{.data.password}' | base64 -d; echo
+```
+
+Login: `root` / (password above)
+
+## 3. Create a project and push manifests
+
+1. In the GitLab UI, create a new blank project (e.g. `p3_bonus`)
+2. Create a Personal Access Token: user menu → Edit profile →
+   Access Tokens → scopes `api` + `write_repository`
+3. Push the Part 3 manifests to it:
+
+```bash
+cd p3/dev   # wherever the Part 3 manifests live
+git remote add gitlab http://root:<TOKEN>@localhost:8181/root/p3_bonus.git
+git push gitlab main
+```
+
+## 4. Point Argo CD at the local GitLab repo
+
+Apply the provided Application manifest:
+
+```bash
+kubectl apply -f bonus/confs/gitlab-app.yaml
+```
+
+This Application points to:
+
+http://gitlab-webservice-default.gitlab.svc.cluster.local:8181/root/p3_bonus.git
+
+
+using the in-cluster DNS name, since Argo CD and GitLab share the
+same cluster network.
+
+If the repo is private, register credentials with Argo CD:
+
+```bash
+argocd repo add http://gitlab-webservice-default.gitlab.svc.cluster.local:8181/root/p3_bonus.git \
+  --username root \
+  --password <TOKEN>
+```
+
+## 5. Verify
+
+```bash
+kubectl get applications -n argocd
+```
+
+Should show `Synced` / `Healthy`. Pushing a change to the GitLab
+project triggers Argo CD to sync it into the `dev` namespace, exactly
+as it did with GitHub in Part 3.
