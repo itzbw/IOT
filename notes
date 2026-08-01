@@ -114,3 +114,5 @@ kubectl port-forward -n gitlab svc/gitlab-webservice-default 8181:8181
 
 
 verify connect argocd app list
+
+Attention : p1 et p2 partagent l’IP .110. Il faut vagrant destroy -f dans p1 avant de lancer p2.

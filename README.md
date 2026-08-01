@@ -1,5 +1,19 @@
 # Inception-of-thing
 
+All VMs use **CentOS 7** (`centos/7`). The Vagrant `private_network` attaches
+to **`eth1`** on VirtualBox (NAT is `eth0`). K3s binds to the eth1 IPs below.
+
+| Part | VM(s) | Private IP (eth1) |
+|------|-------|-------------------|
+| p1 | bwongS (master) | 192.168.56.110 |
+| p1 | bwongSW (worker) | 192.168.56.111 |
+| p2 | bwongS (single node) | 192.168.56.110 |
+| p3 | imqandylS | 192.168.56.120 |
+| bonus | (see bonus/) | 192.168.56.130 |
+
+p1 and p2 both use **192.168.56.110** — destroy each part before starting the
+next.
+
 ## Defense notes
 
 **Why `kubectl apply --server-side` for the Argo CD install (p3/bonus launch.sh)?**
@@ -10,28 +24,31 @@ client-side apply is rejected ("Too long: may not be more than 262144 bytes").
 With `--server-side`, the API server tracks field ownership itself (managed
 fields) instead of using the annotation — same install, no size limit.
 
+**Why `centos-setup.sh` before K3s (p1/p2)?**
+CentOS ships with `firewalld`, which blocks K3s ports. The script installs
+`curl`, disables firewalld, and verifies that `eth1` is up before K3s starts.
+
 ## How to test (full run-book)
 
 Test from a **fresh clone in an empty folder** (that is what the evaluator
-does). p1 and p2 both use 192.168.56.110 — **destroy each part before
-starting the next**. All `vagrant` commands run from inside the part's folder.
+does). All `vagrant` commands run from inside the part's folder.
 
 ### Part 1 — K3s cluster (~10 min)
 
 ```sh
 cd p1
 rm -f confs/token        # a stale token from an old run breaks the worker join
-vagrant up               # bwongS provisions first, then bwongSW
+vagrant up               # bwongS provisions first, then p1-worker
 
 vagrant ssh bwongS
 hostname                          # -> bwongS
-ip a show enp0s8                  # -> 192.168.56.110 (modern iface name, not eth1)
+ip a show eth1                    # -> 192.168.56.110
 kubectl get nodes -o wide         # -> bwongS + bwongsw Ready, IPs .110 / .111
 exit
 
-vagrant ssh bwongSW
+vagrant ssh p1-worker
 hostname                          # -> bwongSW
-ip a show enp0s8                  # -> 192.168.56.111
+ip a show eth1                    # -> 192.168.56.111
 systemctl is-active k3s-agent     # -> active
 exit
 
@@ -40,18 +57,21 @@ vagrant destroy -f                # before p2!
 
 ### Part 2 — three apps + ingress (~10 min)
 
+Apps are deployed in the **`kube-system`** namespace (subject requirement).
+
 ```sh
 cd ../p2
 vagrant up
 vagrant ssh bwongS
 
-kubectl get nodes -o wide                 # single node, .110
-kubectl get deploy                        # app-one 1/1, app-two 3/3, app-three 1/1
-kubectl get pods                          # all Running
-kubectl get ingress                       # the eval asks to "show your ingress"
-curl -H "Host: app1.com" localhost        # -> app-one page
-curl -H "Host: app2.com" localhost        # -> app-two page
-curl localhost                            # -> app-three (default)
+ip a show eth1                              # -> 192.168.56.110
+kubectl get nodes -o wide                   # single node, .110
+kubectl get deploy -n kube-system           # app-one 1/1, app-two 3/3, app-three 1/1
+kubectl get pods -n kube-system             # all Running; POD_NAMESPACE -> kube-system
+kubectl get ingress -n kube-system          # the eval asks to "show your ingress"
+curl -H "Host: app1.com" localhost          # -> app-one page
+curl -H "Host: app2.com" localhost          # -> app-two page
+curl localhost                              # -> app-three (default)
 exit
 ```
 
@@ -65,11 +85,11 @@ replicas. Then `vagrant destroy -f`.
 ```sh
 cd ../p3
 vagrant up
-vagrant ssh p3-host
-cd /vagrant/scripts && bash install.sh
+vagrant ssh imqandylS
+cd /vagrant/p3/scripts && bash install.sh
 exit                                      # required: docker group needs re-login
-vagrant ssh p3-host
-cd /vagrant/scripts && bash launch.sh     # save the admin password it prints
+vagrant ssh imqandylS
+cd /vagrant/p3/scripts && bash launch.sh  # save the admin password it prints
 
 kubectl get ns                            # argocd + dev
 kubectl get pods -n dev                   # wil-playground Running

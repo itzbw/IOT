@@ -4,18 +4,29 @@ set -e
 
 echo "📦 Installing dependencies for K3d and Argo CD..."
 
+if command -v dnf &>/dev/null; then
+  PKG_MGR=dnf
+elif command -v yum &>/dev/null; then
+  PKG_MGR=yum
+else
+  echo "ERROR: yum or dnf is required (CentOS/RHEL expected)."
+  exit 1
+fi
 
-sudo apt update && sudo apt install -y \
-  curl wget apt-transport-https ca-certificates gnupg lsb-release software-properties-common
+sudo $PKG_MGR install -y \
+  curl wget ca-certificates yum-utils device-mapper-persistent-data lvm2
 
 echo "🐳 Installing Docker..."
 
-sudo apt remove -y docker docker-engine docker.io containerd runc || true
+sudo $PKG_MGR remove -y \
+  docker docker-client docker-client-latest docker-common \
+  docker-latest docker-latest-logrotate docker-logrotate docker-engine \
+  2>/dev/null || true
 
 curl -fsSL https://get.docker.com | sudo bash
 
+sudo systemctl enable --now docker
 sudo usermod -aG docker $USER
-
 
 echo "📦 Installing kubectl..."
 
@@ -30,11 +41,9 @@ curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
 chmod +x kubectl
 sudo mv kubectl /usr/local/bin/
 
-
 echo "📦 Installing k3d..."
 
 curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
-
 
 echo "📦 Installing Argo CD CLI..."
 

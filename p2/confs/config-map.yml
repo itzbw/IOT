@@ -53,3 +53,4 @@ data:
 kind: ConfigMap
 metadata:
   name: nginx-html
+  namespace: kube-system
