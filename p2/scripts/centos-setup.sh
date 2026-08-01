@@ -2,7 +2,23 @@
 
 set -e
 
-# CentOS/RHEL prerequisites for K3s and Vagrant synced folders
+detect_private_if() {
+  local if_by_ip
+  if_by_ip=$(ip -o -4 addr show | awk '/192\.168\.56\./ {print $2; exit}')
+  if [ -n "$if_by_ip" ]; then
+    echo "$if_by_ip"
+    return
+  fi
+  if ip link show eth1 &>/dev/null; then
+    echo eth1
+    return
+  fi
+  if ip link show enp0s9 &>/dev/null; then
+    echo enp0s9
+    return
+  fi
+}
+
 if command -v dnf &>/dev/null; then
   PKG_MGR=dnf
 elif command -v yum &>/dev/null; then
@@ -14,20 +30,19 @@ fi
 
 $PKG_MGR install -y curl
 
-# K3s needs API server (6443), kubelet, and flannel/VXLAN ports open
 systemctl disable firewalld --now 2>/dev/null || true
 
-# On CentOS/VirtualBox, Vagrant private_network attaches to eth1
-if ! ip link show eth1 &>/dev/null; then
-  echo "ERROR: eth1 not found. The private network must be configured on eth1."
+PRIVATE_IF=$(detect_private_if)
+if [ -z "$PRIVATE_IF" ]; then
+  echo "ERROR: private network interface not found (expected eth1 or 192.168.56.x)."
   ip link
   exit 1
 fi
 
-if ! ip -4 addr show dev eth1 | grep -q "inet "; then
-  echo "Bringing up eth1..."
-  ifup eth1 2>/dev/null || ip link set eth1 up
+if ! ip -4 addr show dev "$PRIVATE_IF" | grep -q "inet "; then
+  echo "Bringing up $PRIVATE_IF..."
+  ifup "$PRIVATE_IF" 2>/dev/null || ip link set "$PRIVATE_IF" up
 fi
 
-echo "Private network ready on eth1:"
-ip -4 addr show dev eth1
+echo "Private network ready on $PRIVATE_IF:"
+ip -4 addr show dev "$PRIVATE_IF"

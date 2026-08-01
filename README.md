@@ -1,7 +1,13 @@
 # Inception-of-thing
 
-All VMs use **CentOS 7** (`centos/7`). The Vagrant `private_network` attaches
-to **`eth1`** on VirtualBox (NAT is `eth0`). K3s binds to the eth1 IPs below.
+All VMs use **CentOS 7** (`centos/7`) on **x86_64** hosts (42 eval machines).
+The Vagrant `private_network` attaches to **`eth1`** on CentOS 7/VirtualBox
+(NAT is `eth0`). K3s binds to the eth1 IPs below.
+
+**Apple Silicon (M1/M2/M3/M4):** VirtualBox cannot run x86 guests. The
+Vagrantfiles auto-select `bento/rockylinux-9` (ARM64, RHEL-compatible) on
+`arm64` hosts. Use `IOT_BOX=centos/7 vagrant up` only on x86. For the
+defense, always test on a 42 x86 machine with `centos/7`.
 
 | Part | VM(s) | Private IP (eth1) |
 |------|-------|-------------------|
@@ -42,13 +48,13 @@ vagrant up               # bwongS provisions first, then p1-worker
 
 vagrant ssh bwongS
 hostname                          # -> bwongS
-ip a show eth1                    # -> 192.168.56.110
+ip a show eth1                    # CentOS 7 (42) — enp0s9 on ARM dev box
 kubectl get nodes -o wide         # -> bwongS + bwongsw Ready, IPs .110 / .111
 exit
 
 vagrant ssh p1-worker
 hostname                          # -> bwongSW
-ip a show eth1                    # -> 192.168.56.111
+ip a show eth1                    # -> 192.168.56.111 (enp0s9 on ARM dev box)
 systemctl is-active k3s-agent     # -> active
 exit
 

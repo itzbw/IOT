@@ -1,7 +1,9 @@
+IOT_BOX = ENV.fetch("IOT_BOX") {
+  `uname -m`.strip == "arm64" ? "bento/rockylinux-9" : "centos/7"
+}
+
 Vagrant.configure("2") do |config|
-    # Single-node K3s + 3 apps + ingress on CentOS 7 (42 IoT subject)
-    # private_network is attached to eth1 on CentOS/VirtualBox
-    config.vm.box = "centos/7"
+    config.vm.box = IOT_BOX
     config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
 
     config.vm.define "bwongS" do |master|

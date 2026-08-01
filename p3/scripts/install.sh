@@ -30,6 +30,16 @@ sudo usermod -aG docker $USER
 
 echo "📦 Installing kubectl..."
 
+ARCH=$(uname -m)
+case "$ARCH" in
+  x86_64)  K8S_ARCH=amd64; ARGO_ARCH=amd64 ;;
+  aarch64) K8S_ARCH=arm64; ARGO_ARCH=arm64 ;;
+  *)
+    echo "ERROR: unsupported architecture: $ARCH"
+    exit 1
+    ;;
+esac
+
 KUBECTL_VERSION=$(curl -s https://dl.k8s.io/release/stable.txt)
 
 if [[ ! "$KUBECTL_VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -37,7 +47,7 @@ if [[ ! "$KUBECTL_VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   KUBECTL_VERSION="v1.30.1"
 fi
 
-curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${K8S_ARCH}/kubectl"
 chmod +x kubectl
 sudo mv kubectl /usr/local/bin/
 
@@ -47,7 +57,7 @@ curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 
 echo "📦 Installing Argo CD CLI..."
 
-curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+curl -sSL -o argocd "https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-${ARGO_ARCH}"
 chmod +x argocd
 sudo mv argocd /usr/local/bin/
 
