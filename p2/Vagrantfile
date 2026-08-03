@@ -1,5 +1,5 @@
 IOT_BOX = ENV.fetch("IOT_BOX") {
-  `uname -m`.strip == "arm64" ? "bento/rockylinux-9" : "centos/7"
+  `uname -m`.strip == "arm64" ? "bento/rockylinux-9" : "generic/centos9s"
 }
 
 Vagrant.configure("2") do |config|
