@@ -2,10 +2,15 @@
 # Local dev (Apple Silicon): bento/rockylinux-9 (ARM64, RHEL-compatible).
 # Override: IOT_BOX=centos/7 vagrant up
 IOT_BOX = ENV.fetch("IOT_BOX") {
-  `uname -m`.strip == "arm64" ? "bento/rockylinux-9" : "centos/7"
+  `uname -m`.strip == "arm64" ? "bento/rockylinux-9" : "generic/centos9s"
 }
 
 Vagrant.configure("2") do |config|
+
+      if Vagrant.has_plugin?("vagrant-vbguest")
+        config.vbguest.auto_update = false
+    end
+    
     config.vm.box = IOT_BOX
     config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
 
