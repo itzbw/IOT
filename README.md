@@ -101,6 +101,12 @@ kubectl get ns                            # argocd + dev
 kubectl get pods -n dev                   # wil-playground Running
 curl http://localhost:8888/               # -> {"status":"ok", "message": "v1"}
 kubectl port-forward --address 192.168.56.120 svc/argocd-server 8080:80 -n argocd
+or
+vagrant ssh imqandylS -- -L 8080:localhost:8080 then open http://localhost:8080
+Get Argo CD password
+In another SSH terminal:
+kubectl get secret argocd-initial-admin-secret -n argocd \-o jsonpath="{.data.password}" | base64 -d
+
 ```
 
 From the host: open `http://192.168.56.120:8080`, login `admin` + printed
@@ -118,14 +124,16 @@ password, check `playground-app` is Synced/Healthy.
 
 ### Bonus — GitLab (~45 min, mostly waiting)
 
+Start Part 3 VM and cluster first
 ```sh
-cd ../bonus
+Start Part 3 VM and cluster first
 vagrant up
-vagrant ssh bonus
-cd /vagrant/scripts && bash install.sh
-exit
-vagrant ssh bonus
-cd /vagrant/scripts && bash launch.sh     # 15-20 min; save BOTH passwords
+vagrant ssh
+cd /vagrant/scripts && bash launch.sh  2times
+# 1) install Helm v3
+curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+cd /vagrant
+bash bonus/scripts/install_gitlab.sh
 ```
 
 On the host, add to `/etc/hosts`: `192.168.56.130 gitlab.local`

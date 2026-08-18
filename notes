@@ -50,7 +50,7 @@ sudo usermod -aG docker $USER
 newgrp docker
 docker ps
 chmod +x install.sh launch.sh
-./launch.sh
+./launch.sh 2times
 Run:
 k3d kubeconfig merge iot-cluster --kubeconfig-switch-context
 kubectl get nodes
@@ -62,7 +62,7 @@ kubectl get pods -n dev -w
 k3d cluster list
 curl http://localhost:8888/ and check http://192.168.56.120:8888
 kubectl get deployment -n dev -o yaml | grep image and change v1 to v2
-to see the website: kubectl port-forward --address 0.0.0.0 svc/argocd-server 8080:443 -n argocd
+to see the website: vagrant ssh imqandylS -- -L 8080:localhost:8080 
 https://192.168.56.120:8080 write admin for username and 
 Get Argo CD password
 In another SSH terminal:
@@ -130,3 +130,10 @@ kubectl port-forward -n gitlab svc/gitlab-webservice-default 8181:8181
 verify connect argocd app list
 
 Attention : p1 et p2 partagent l’IP .110. Il faut vagrant destroy -f dans p1 avant de lancer p2.
+
+
+
+If you just need space, clean old Docker data:
+
+
+docker system prune -a -f --volumes
