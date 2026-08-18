@@ -14,6 +14,12 @@ killall -9 VBoxSVC VirtualBox VBoxHeadless 2>/dev/null
 ls /goinfre/imqandyl/VirtualBoxVMs
 rm -rf /goinfre/imqandyl/VirtualBoxVMs/imqandylS
 
+\\\\\\\\\\\\\\\\\\\\p1\\\\\\\\\\\\\\\
+vagrant up
+vagrant ssh bwongS
+kubectl get nodes
+kubectl get pods -A
+kubectl get svc
  ////////////////p2////////////
  cd ~/Desktop/IOT/p2
 vagrant ssh
@@ -22,7 +28,7 @@ kubectl get pods
 Check services:
 kubectl get svc
 kubectl get nodes
-kubectl get ingress
+kubectl get ingress -A
 Test app1
 curl -H "Host: app1.com" http://192.168.56.110
 Test app2
@@ -36,6 +42,11 @@ tap in browser http://app1.com
 vagrant ssh 
  cd /vagrant
  cd scripts
+ whoami
+groups
+sudo usermod -aG docker $USER
+newgrp docker
+docker ps
 chmod +x install.sh launch.sh
 ./launch.sh
 Run:
@@ -45,6 +56,7 @@ kubectl get nodes
 kubectl get pods -n argocd
 4) Then check your application
 kubectl get pods -n dev
+kubectl get pods -n dev -w
 k3d cluster list
 curl http://localhost:8888/ and check http://192.168.56.120:8888
 kubectl get deployment -n dev -o yaml | grep image and change v1 to v2

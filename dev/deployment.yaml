@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: playground
-          image: imqandyl/playground:v1
+          image: imqandyl/playground:v2
           ports:
             - containerPort: 8888
