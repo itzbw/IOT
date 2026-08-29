@@ -114,7 +114,7 @@ password, check `playground-app` is Synced/Healthy.
 
 **v1 -> v2 demo** (rehearse once — it is the core of the defense):
 
-1. In the GitHub repo `itzbw/iot-bwong`, edit `dev/deployment.yaml`:
+1. In the GitHub repo `itzbw/iot-imqandyl`, edit `dev/deployment.yaml`:
    `v1` -> `v2`, commit, push.
 2. Argo polls every ~3 min — click **Refresh** in the UI to skip the wait.
 3. `curl http://localhost:8888/` -> `"message": "v2"`.
